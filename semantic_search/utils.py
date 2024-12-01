@@ -1,7 +1,6 @@
 from os import path
-from dataclasses import dataclass   
+from dataclasses import dataclass
 from milvus_model.dense import SentenceTransformerEmbeddingFunction
-
 
 
 DB_NAME = "people_news"
@@ -19,7 +18,7 @@ class SearchConfig:
     vector_dim: int = 384
     model_name: str = "all-MiniLM-L6-v2"
     DEVICE = "cpu"
-    
+
     @property
     def model(self) -> SentenceTransformerEmbeddingFunction:
         return SentenceTransformerEmbeddingFunction(
