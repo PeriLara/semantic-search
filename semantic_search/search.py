@@ -4,7 +4,7 @@ import gradio as gr
 import numpy as np
 from pymilvus import MilvusClient
 
-from semantic_search.utils import DB_NAME, SearchConfig
+from semantic_search.utils import DB_NAME, model, search_params
 
 CLIENT = MilvusClient(f"{DB_NAME}.db")
 CLIENT.load_collection(DB_NAME)
@@ -18,12 +18,12 @@ def search_documents(query: str, top_k: int) -> str:
     Returns:
         str: formatted search results
     """
-    embedded_query: List[np.ndarray] = SearchConfig.model.encode_queries([query])
+    embedded_query: List[np.ndarray] = model().encode_queries([query])
 
     results = CLIENT.search(
         collection_name=DB_NAME,
         data=embedded_query,
-        search_params=SearchConfig.search_params,
+        search_params=search_params(),
         limit=top_k,
         output_fields=["id", "title", "snippet"],
     )

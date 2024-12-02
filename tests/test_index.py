@@ -3,15 +3,15 @@ from unittest.mock import Mock
 import pytest
 
 from semantic_search.index import create_documents, create_schema
-from semantic_search.utils import SearchConfig
+from semantic_search.utils import VECTOR_DIM
 
 
 @pytest.fixture
 def mock_embedding_model():
     model = Mock()
     model.encode_documents.return_value = [
-        [0.1] * SearchConfig.vector_dim,
-        [0.2] * SearchConfig.vector_dim,
+        [0.1] * VECTOR_DIM,
+        [0.2] * VECTOR_DIM,
     ]
     return model
 
@@ -45,7 +45,7 @@ def test_create_documents(mock_embedding_model):
     assert documents[0]["id"] == "http://example.com/1"
     assert documents[0]["title"] == "Title 1"
     assert documents[0]["snippet"] == "Summary 1"
-    assert len(documents[0]["vector"]) == SearchConfig.vector_dim
+    assert len(documents[0]["vector"]) == VECTOR_DIM
 
 
 def test_create_documents_missing_fields(mock_embedding_model):

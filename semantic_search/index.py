@@ -8,8 +8,7 @@ from milvus_model.dense import SentenceTransformerEmbeddingFunction
 from pymilvus import CollectionSchema, FieldSchema, MilvusClient
 from pymilvus.orm.types import DataType
 
-from semantic_search.utils import ARTICLES_DIR, DB_NAME
-from semantic_search.utils import SearchConfig
+from semantic_search.utils import ARTICLES_DIR, DB_NAME, METRIC_TYPE, INDEX_TYPE, VECTOR_DIM, model
 
 REQUIRED_FIELDS = ["link", "title", "summary"]
 
@@ -31,7 +30,7 @@ def load_articles(articles_dir: str) -> List[Dict[str, Any]]:
 def create_collection(
     client: MilvusClient,
     collection_name: str,
-    dimension: int = SearchConfig.vector_dim,
+    dimension: int = VECTOR_DIM,
     recreate: bool = False,
     collection_args: Dict[str, Any] = {},
 ) -> None:
@@ -71,7 +70,7 @@ def create_schema() -> CollectionSchema:
     )
     title_field = FieldSchema(name="title", dtype=DataType.VARCHAR, max_length=1000)
     vector_field = FieldSchema(
-        name="vector", dtype=DataType.FLOAT_VECTOR, dim=SearchConfig.vector_dim
+        name="vector", dtype=DataType.FLOAT_VECTOR, dim=VECTOR_DIM
     )
     snippet = FieldSchema(name="snippet", dtype=DataType.VARCHAR, max_length=10000)
     published_date = FieldSchema(name="published_date", dtype=DataType.FLOAT)
@@ -145,14 +144,14 @@ def main(db_name: str, articles_dir: str, recreate: bool):
     create_schema()
 
     articles = load_articles(articles_dir=articles_dir)
-    documents = create_documents(articles=articles, model=SearchConfig.model)
+    documents = create_documents(articles=articles, model=model())
     client.insert(collection_name=db_name, data=documents)
 
     index_params = MilvusClient.prepare_index_params()
     index_params.add_index(
         field_name="vector",
-        metric_type=SearchConfig.metric_type,
-        index_type=SearchConfig.index_type,
+        metric_type=METRIC_TYPE,
+        index_type=INDEX_TYPE,
         index_name=db_name,
     )
     logger.info(f"Creating index {db_name} with params {index_params}")

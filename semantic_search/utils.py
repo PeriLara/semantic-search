@@ -1,7 +1,6 @@
 from os import path
-from dataclasses import dataclass
 from milvus_model.dense import SentenceTransformerEmbeddingFunction
-
+from typing import Dict
 
 DB_NAME = "people_news"
 
@@ -11,20 +10,18 @@ RSS_FEED_RESOURCES_DIR = path.join(DATA_DIR, "rss_feed_resources")
 ARTICLES_DIR = path.join(DATA_DIR, "articles")
 
 
-@dataclass
-class SearchConfig:
-    metric_type: str = "COSINE"
-    index_type: str = "HNSW"
-    vector_dim: int = 384
-    model_name: str = "all-MiniLM-L6-v2"
-    DEVICE = "cpu"
+# SEARCH CONFIG
+METRIC_TYPE: str = "COSINE"
+INDEX_TYPE: str = "HNSW"
+VECTOR_DIM: int = 384
+MODEL_NAME: str = "all-MiniLM-L6-v2"
+DEVICE: str = "cpu"
 
-    @property
-    def model(self) -> SentenceTransformerEmbeddingFunction:
-        return SentenceTransformerEmbeddingFunction(
-            model_name=self.model_name, device=self.DEVICE
-        )
+def model(model_name: str = MODEL_NAME, device: str = DEVICE) -> SentenceTransformerEmbeddingFunction:
+    return SentenceTransformerEmbeddingFunction(
+        model_name=model_name, device=device
+    )
 
-    @property
-    def search_params(self):
-        return {"metric_type": self.metric_type}
+
+def search_params(metric_type: str = METRIC_TYPE) -> Dict[str, str]:
+    return {"metric_type": metric_type}
