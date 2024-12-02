@@ -64,6 +64,7 @@ if __name__ == "__main__":
         outputs=gr.Textbox(label="Search Results", lines=10),
         title="Semantic Search Demo",
         description="Enter a query to search through the document collection using semantic similarity.",
+        allow_flagging="never",
     )
 
     iface.launch()
